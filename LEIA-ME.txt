@@ -1,3 +1,5 @@
+TCESP Mendonça PWA v0.5
+
 TCESP MENDONÇA — PWA v0.3
 
 Principais melhorias:
@@ -18,3 +20,6 @@ Principais melhorias:
 Para atualizar o GitHub Pages, substitua index.html, app.js, style.css, sw.js e LEIA-ME.txt. seed-data.js, manifest.webmanifest e icon.svg podem permanecer, mas o ZIP contém o conjunto completo.
 
 Atenção: os gráficos refletem os eventos publicados na base do TCESP. Não representam, isoladamente, conclusão sobre regularidade contábil, fiscal, licitatória ou jurídica.
+
+
+v0.4: adicionada aba “Entenda os dados”, com glossário de empenho, reforço, anulação, empenho líquido, liquidação, pagamento, receita arrecadada, metodologia e fontes oficiais.
