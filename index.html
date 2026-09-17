@@ -1,20 +1,21 @@
 <!doctype html><html lang="pt-BR"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#17324d"><meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="apple-mobile-web-app-title" content="TCESP Mendonça">
+<meta name="theme-color" content="#17324d"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="TCESP Mendonça">
 <link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="icon.svg">
 <title>TCESP Mendonça</title><link rel="stylesheet" href="style.css"></head><body>
-<header><div><b>TCESP • Mendonça</b><small>Receitas e despesas municipais</small></div><button id="installBtn" hidden>Instalar</button></header>
+<header><div><b>TCESP • Mendonça</b><small>Painel analítico de receitas e despesas</small></div><button id="installBtn" hidden>Instalar</button></header>
 <main>
 <section class="controls card">
-<label>Ano<select id="ano"><option>2026</option></select></label>
-<label>Mês<select id="mes"><option value="0">Ano inteiro</option></select></label>
+<label>Ano<select id="ano"><option>2026</option></select></label><label>Mês<select id="mes"><option value="0">Ano inteiro</option></select></label>
+<label>Órgão<select id="orgao"><option value="Prefeitura">Prefeitura</option><option value="Todos">Todos</option><option value="Câmara">Câmara</option></select></label>
 <label class="grow">Pesquisar<input id="q" placeholder="Fornecedor, CNPJ, empenho, receita…"></label>
-<button id="apiBtn">Atualizar mês pelo TCESP</button><label class="file">Importar JSON<input id="file" type="file" accept=".json,.txt,.md" multiple></label>
+<button id="apiBtn">Atualizar mês TCESP</button><label class="file">Importar JSON<input id="file" type="file" accept=".json,.txt,.md" multiple></label>
 </section>
 <section id="cards" class="cards"></section>
-<nav><button data-tab="despesas" class="active">Despesas</button><button data-tab="receitas">Receitas</button><button data-tab="fornecedores">Fornecedores</button></nav>
-<section class="card tablewrap"><table><thead id="thead"></thead><tbody id="tbody"></tbody></table></section>
+<nav><button data-tab="painel" class="active">Painel</button><button data-tab="despesas">Despesas</button><button data-tab="receitas">Receitas</button><button data-tab="fornecedores">Fornecedores</button><button data-tab="auditoria">Auditoria</button></nav>
+<section id="painel" class="panel"></section>
+<section id="tableSec" class="card tablewrap" hidden><table><thead id="thead"></thead><tbody id="tbody"></tbody></table></section>
+<section id="auditSec" hidden></section>
+<section class="tools card"><b>Dados</b><button id="csvBtn">Exportar CSV da aba</button><button id="backupBtn">Backup JSON</button><label class="file">Restaurar backup<input id="restore" type="file" accept=".json"></label><button id="resetBtn">Restaurar base original</button></section>
 <p id="status"></p>
-</main>
-<script src="seed-data.js"></script><script src="app.js"></script></body></html>
+</main><script src="seed-data.js"></script><script src="app.js"></script></body></html>

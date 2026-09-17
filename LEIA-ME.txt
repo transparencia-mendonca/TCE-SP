@@ -1,0 +1,20 @@
+TCESP MENDONÇA — PWA v0.3
+
+Principais melhorias:
+- Painel analítico com gráfico de pizza dos pagamentos por credor (Top 10 + demais).
+- Gráfico mensal Receita x Empenho líquido x Pago.
+- Gráfico e ranking dos 20 maiores credores por valor pago.
+- Filtro Prefeitura / Câmara / Todos.
+- Empenho líquido = Empenhado + Reforço - Anulação.
+- Fornecedores agrupados prioritariamente pelo identificador/CNPJ, não pela grafia do nome.
+- Aba Auditoria com testes de duplicidade, estornos, receitas negativas, valores zero e aliases.
+- Correção crítica: receitas duplicadas não são eliminadas automaticamente.
+- Atualização/importação SUBSTITUI integralmente o mês correspondente, evitando duplicação entre atualizações.
+- IndexedDB substitui localStorage para suportar crescimento da base.
+- Backup e restauração JSON.
+- Exportação CSV das abas de dados.
+- Service worker v03 com atualização network-first e limpeza de cache antigo.
+
+Para atualizar o GitHub Pages, substitua index.html, app.js, style.css, sw.js e LEIA-ME.txt. seed-data.js, manifest.webmanifest e icon.svg podem permanecer, mas o ZIP contém o conjunto completo.
+
+Atenção: os gráficos refletem os eventos publicados na base do TCESP. Não representam, isoladamente, conclusão sobre regularidade contábil, fiscal, licitatória ou jurídica.
