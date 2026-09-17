@@ -1,25 +1,21 @@
-TCESP Mendonça PWA v0.5
+TCESP Mendonça — PWA v0.6
 
-TCESP MENDONÇA — PWA v0.3
+Base inicial: janeiro a julho de 2026.
 
-Principais melhorias:
-- Painel analítico com gráfico de pizza dos pagamentos por credor (Top 10 + demais).
-- Gráfico mensal Receita x Empenho líquido x Pago.
-- Gráfico e ranking dos 20 maiores credores por valor pago.
-- Filtro Prefeitura / Câmara / Todos.
-- Empenho líquido = Empenhado + Reforço - Anulação.
-- Fornecedores agrupados prioritariamente pelo identificador/CNPJ, não pela grafia do nome.
-- Aba Auditoria com testes de duplicidade, estornos, receitas negativas, valores zero e aliases.
-- Correção crítica: receitas duplicadas não são eliminadas automaticamente.
-- Atualização/importação SUBSTITUI integralmente o mês correspondente, evitando duplicação entre atualizações.
-- IndexedDB substitui localStorage para suportar crescimento da base.
-- Backup e restauração JSON.
-- Exportação CSV das abas de dados.
-- Service worker v03 com atualização network-first e limpeza de cache antigo.
+NOVO — MULTIEXERCÍCIO
+- Exercícios 2026 e 2025 aparecem no seletor.
+- “Carregar exercício TCESP” tenta buscar janeiro a dezembro do exercício selecionado diretamente na API oficial.
+- “Adicionar exercício” permite incluir qualquer ano entre 2008 e o ano atual.
+- Aba “Comparar anos” compara Receita, Empenho líquido, Liquidado e Pago dos exercícios armazenados.
+- Exercícios importados ficam no IndexedDB deste aparelho e entram no backup JSON.
+- A base inicial de 2026 permanece embutida em seed-data.js.
 
-Para atualizar o GitHub Pages, substitua index.html, app.js, style.css, sw.js e LEIA-ME.txt. seed-data.js, manifest.webmanifest e icon.svg podem permanecer, mas o ZIP contém o conjunto completo.
+IMPORTANTE
+A API do TCESP é a fonte dos dados. Se o navegador bloquear consultas diretas por CORS/rede, a carga automática pode falhar; nesse caso, a importação manual JSON continua disponível por mês.
+Não compare um ano parcial com um exercício completo sem igualar o período.
 
-Atenção: os gráficos refletem os eventos publicados na base do TCESP. Não representam, isoladamente, conclusão sobre regularidade contábil, fiscal, licitatória ou jurídica.
+ARQUIVOS
+index.html, app.js, style.css, seed-data.js, manifest.webmanifest, sw.js, icon.svg.
 
-
-v0.4: adicionada aba “Entenda os dados”, com glossário de empenho, reforço, anulação, empenho líquido, liquidação, pagamento, receita arrecadada, metodologia e fontes oficiais.
+PUBLICAÇÃO
+Substitua todos os arquivos do repositório GitHub Pages. O cache desta versão é tcesp-mendonca-v060.
