@@ -1,22 +1,24 @@
-TCESP Mendonça — v0.9.16
+TCESP Mendonça — v0.9.17
 
-Atualização final desta etapa da triagem de pagamentos pessoais eventuais.
+Atualização do módulo de auditoria do painel.
 
 O que muda:
-- a antiga aba “Diárias” passa a se chamar “Pagamentos eventuais”;
-- a apresentação deixa claro que os lançamentos podem corresponder a diárias, ressarcimentos/reembolsos, alimentação, combustível/deslocamento, adiantamentos ou outras verbas eventuais;
-- os filtros de recorrência e ambiguidade foram reforçados para reduzir falsos positivos antes da publicação;
-- a interface deixa de exibir percentuais e detalhes da regra de pontuação, apresentando apenas nível de confiança alto/muito alto;
-- o painel mantém uma abordagem conservadora: padrões recorrentes ou ambíguos ficam fora da exposição pública;
-- ranking e detalhamento continuam coerentes, agrupados por pessoa e com lançamentos em ordem cronológica;
-- permanecem os links para conferência do empenho/liquidação no TCESP;
-- nenhuma referência a documentação sigilosa é utilizada ou exibida.
+- a aba “Auditoria” passa a se apresentar como “Sinais de auditoria”;
+- a triagem anual ganhou detector de múltiplos empenhos de pequeno valor por credor;
+- foi incluído detector de pagamentos coincidentes: mesmo credor, mesmo valor e mesma data em empenhos distintos;
+- foi criada uma área de qualidade dos dados, com divergência entre competência e data, pagamentos em fins de semana, ausência de identificação, grafias distintas, duplicatas exatas e estornos;
+- a aba também executa testes de integridade entre empenho líquido, liquidação e pagamento e informa quando não encontra quebras;
+- os sinais são apresentados como pontos de conferência, nunca como prova de irregularidade;
+- mês e pesquisa textual são ignorados nos testes anuais da aba de auditoria para reduzir falsos positivos; o filtro de órgão é respeitado;
+- ao clicar em um credor no ranking, na aba Gastos ou nas tabelas de auditoria, abre-se uma ficha histórica consolidada pelo identificador, com nomes alternativos, totais por exercício, empenhos e pagamentos;
+- a interface não publica a regra detalhada de seleção dos sinais;
+- a aba “Pagamentos eventuais” e seus filtros conservadores da v0.9.16 foram preservados.
 
-Ressalva:
-A API do TCESP não distingue com precisão suficiente a natureza nominal do pagamento. A triagem não substitui a conferência no Portal da Transparência Municipal e nos documentos do empenho/liquidação.
+Limitações:
+A base do TCESP usada pelo painel não contém, com detalhe suficiente para esses testes, objeto da contratação, modalidade, contrato, nota fiscal, medição, ata de registro de preços ou justificativa de pagamento. Os sinais devem ser cotejados com os documentos administrativos correspondentes.
 
 Publicação:
 - substituir index.html, app.js, style.css, sw.js e LEIA-ME.txt;
 - preservar seed-data.js e data-2014.js a data-2026.js;
-- o Service Worker/PWA offline permanece temporariamente desativado para evitar cache de versões antigas;
-- build estático: 0916-20260920.
+- o Service Worker/PWA offline permanece temporariamente desativado para evitar cache de versões antigas durante a fase de atualização frequente;
+- build estático: 0917-20260920.

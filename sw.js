@@ -1,4 +1,4 @@
-/* v0.9.16 — worker de transição: remove caches e se desregistra.
+/* v0.9.17 — worker de transição: remove caches e se desregistra.
    O painel permanece temporariamente sem cache offline durante a fase de atualização frequente. */
 self.addEventListener("install",e=>{self.skipWaiting()});
 self.addEventListener("activate",e=>{e.waitUntil((async()=>{
