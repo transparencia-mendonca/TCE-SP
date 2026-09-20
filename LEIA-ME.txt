@@ -105,3 +105,10 @@ v0.9.0 — diárias, viagens, receitas e setores
 - Cache do aplicativo atualizado para v090.
 
 Versão 0.9.2: comparação anual por pessoa física e órgão, valores recorrentes em pelo menos 3 meses e 60% dos meses com pagamentos positivos. Pagamentos adicionais no mesmo mês são sinalizados para conferência, nunca convertidos automaticamente em diárias. Clique no nome da comparação para abrir todos os lançamentos daquele exercício.
+
+
+V0.9.4 — SALÁRIOS E DIÁRIAS
+- Rankings separados para salários/subsídios prováveis e diárias possíveis.
+- Ordem decrescente de valor em ambos.
+- Pessoas com o mesmo sobrenome são agrupadas visualmente; isso não presume parentesco.
+- Ressalva explícita: a API JSON do TCESP não diferencia suficientemente a natureza nominal do lançamento; confirmação exige cotejo com o Portal da Transparência Municipal.
