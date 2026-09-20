@@ -19,3 +19,10 @@ index.html, app.js, style.css, seed-data.js, manifest.webmanifest, sw.js, icon.s
 
 PUBLICAÇÃO
 Substitua todos os arquivos do repositório GitHub Pages. O cache desta versão é tcesp-mendonca-v060.
+
+
+VERSÃO 0.7
+- Comparativo de exercícios agora inclui gráficos anuais e crescimento nominal.
+- Registra automaticamente data/hora de cada atualização mensal feita pela API.
+- Exibe último mês disponível, última atualização e última verificação automática.
+- Em 2026, após o prazo AUDESP conhecido do próximo mês, tenta consultar automaticamente a API no máximo uma vez por dia.
