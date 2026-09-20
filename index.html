@@ -14,9 +14,10 @@
 <section id="apiFreshness" class="freshness card"></section>
 <section id="analysisScope" class="analysis-scope card" hidden></section>
 <section id="cards" class="cards"></section>
-<nav><button data-tab="painel" class="active">Painel</button><button data-tab="despesas">Despesas</button><button data-tab="receitas">Receitas</button><button data-tab="gastos">Gastos</button><button data-tab="auditoria">Auditoria</button><button data-tab="comparar">Comparar anos</button><button data-tab="entenda">Entenda os dados</button></nav>
+<nav><button data-tab="painel" class="active">Painel</button><button data-tab="despesas">Despesas</button><button data-tab="receitas">Receitas</button><button data-tab="gastos">Gastos</button><button data-tab="diarias">Diárias e viagens</button><button data-tab="auditoria">Auditoria</button><button data-tab="comparar">Comparar anos</button><button data-tab="entenda">Entenda os dados</button></nav>
 <section id="painel" class="panel"></section>
 <section id="tableSec" class="card tablewrap" hidden><table><thead id="thead"></thead><tbody id="tbody"></tbody></table></section>
+<section id="travelSec" hidden></section>
 <section id="auditSec" hidden></section>
 <section id="compareSec" hidden></section>
 <section id="entendaSec" hidden>
@@ -33,6 +34,7 @@
     <article class="explain card"><h3>Receita − empenho líquido</h3><p>Comparação analítica produzida pelo painel entre a receita arrecadada e o empenho líquido. <strong>Sozinha, essa diferença não deve ser interpretada como o resultado orçamentário definitivo ou como déficit/superávit do Município.</strong></p></article>
   </div>
   <div class="method card"><h3>Fonte e metodologia</h3><p>Os registros de despesas e receitas vêm da API do Portal da Transparência Municipal do Tribunal de Contas do Estado de São Paulo (TCESP). A documentação da API identifica, nas despesas, os eventos “empenhado”, “liquidado”, “pago”, “reforço” e “anulação”. O painel preserva esses eventos separadamente.</p><p>Os conceitos legais de empenho, liquidação e ordem de pagamento têm como referência os arts. 58 a 65 da Lei Federal nº 4.320/1964. Os indicadores “Empenho líquido” e “Receita − empenho líquido” são cálculos deste painel, apresentados para facilitar a leitura e não para substituir demonstrativos contábeis oficiais, auditoria ou análise das contas públicas.</p><p><a href="https://transparencia.tce.sp.gov.br/apis" target="_blank" rel="noopener">Documentação da API do TCESP</a> · <a href="https://www.planalto.gov.br/ccivil_03/leis/l4320.htm" target="_blank" rel="noopener">Lei nº 4.320/1964</a></p></div>
+  <div class="method card"><h3>Classificações indicativas</h3><p>A API consultada não fornece função orçamentária, secretaria responsável nem objeto detalhado da despesa. Por isso, o gráfico “Gastos pagos por setor” e a aba “Diárias e viagens” usam palavras presentes no nome do credor. São aproximações para exploração, não classificações contábeis oficiais nem relações exaustivas.</p><p>Regra local solicitada: pagamentos à PROJETA são apresentados em “Limpeza pública”. A categoria “Folha de pagamento” exige expressões de remuneração, como “folha de pagamento”, “salário” ou “subsídios”; uma empresa que apenas contenha a palavra “Folha” no nome não é classificada automaticamente como folha salarial.</p></div>
 </section>
 <section class="tools card"><b>Dados</b><span class="datahint">Exercícios adicionais ficam salvos neste aparelho.</span><button id="csvBtn">Exportar CSV da aba</button><button id="backupBtn">Backup JSON</button><label class="file">Restaurar backup<input id="restore" type="file" accept=".json"></label><button id="resetBtn">Restaurar base original</button></section>
 <p id="status"></p>

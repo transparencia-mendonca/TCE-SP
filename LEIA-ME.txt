@@ -1,4 +1,4 @@
-TCESP Mendonça — PWA v0.8.6
+TCESP Mendonça — PWA v0.9.0
 
 Base histórica incorporada: exercícios de 2014 a 2026; o exercício de 2026 permanece parcial e recebe atualizações pela API.
 
@@ -18,7 +18,7 @@ ARQUIVOS
 index.html, app.js, style.css, seed-data.js, data-2014.js a data-2026.js, manifest.webmanifest, sw.js, icon.svg.
 
 PUBLICAÇÃO
-Substitua todos os arquivos do repositório GitHub Pages. O cache desta versão é tcesp-mendonca-v086.
+Substitua os arquivos listados no pacote desta versão. O cache desta versão é tcesp-mendonca-v090.
 
 
 VERSÃO 0.7
@@ -75,3 +75,14 @@ v0.8.7 — restauração reforçada do panorama geral
 - O botão “Limpar” usa a mesma rotina central de restauração.
 - Após a limpeza, o painel verifica se algum título individual permaneceu; em caso de falha excepcional, recarrega a página automaticamente.
 - Cache do aplicativo atualizado para v087.
+
+
+v0.9.0 — diárias, viagens, receitas e setores
+- Nova aba “Diárias e viagens” com ranking clicável, datas, tipo, credor, identificação, empenho, órgão e valor pago.
+- A relação de diárias e viagens é indicativa: usa termos reconhecíveis no nome do credor, pois a API não fornece o objeto detalhado da despesa.
+- Novo gráfico de pizza da composição das receitas no Painel.
+- Novo gráfico de gastos pagos por setor, com classificação indicativa pelo nome do credor.
+- Regra solicitada: PROJETA é classificada como Limpeza pública.
+- Folha de pagamento exige expressões salariais, evitando classificar empresas que apenas contenham a palavra “Folha”.
+- Exportação CSV também funciona na nova aba.
+- Cache do aplicativo atualizado para v090.
