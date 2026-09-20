@@ -1,6 +1,6 @@
 <!doctype html><html lang="pt-BR"><head><script>
 (function(){
-  window.TCESP_BUILD_ID="0915-20260920";
+  window.TCESP_BUILD_ID="0916-20260920";
   try{
     if("serviceWorker" in navigator){navigator.serviceWorker.getRegistrations().then(function(rs){return Promise.all(rs.map(function(r){return r.unregister()}))}).catch(function(){})}
     if("caches" in window){caches.keys().then(function(ks){return Promise.all(ks.filter(function(k){return /^tcesp-mendonca-/i.test(k)}).map(function(k){return caches.delete(k)}))}).catch(function(){})}
@@ -10,8 +10,8 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#17324d"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="TCESP Mendonça">
 <link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="icon.svg">
-<title>TCESP Mendonça</title><link rel="stylesheet" href="style.css?v=0915-20260920"></head><body>
-<header><div><div class="brandline"><b>TCESP • Mendonça</b><span class="version-badge">v0.9.15</span></div><small>Painel analítico de receitas e despesas</small></div><button id="installBtn" hidden>Instalar</button></header>
+<title>TCESP Mendonça</title><link rel="stylesheet" href="style.css?v=0916-20260920"></head><body>
+<header><div><div class="brandline"><b>TCESP • Mendonça</b><span class="version-badge">v0.9.16</span></div><small>Painel analítico de receitas e despesas</small></div><button id="installBtn" hidden>Instalar</button></header>
 <main>
 <section class="controls card">
 <label>Exercício<select id="ano"><option value="2026">2026</option><option value="2025">2025</option></select></label><label>Mês<select id="mes"><option value="0">Ano inteiro</option></select></label>
@@ -22,7 +22,7 @@
 <section id="apiFreshness" class="freshness card"></section>
 <section id="analysisScope" class="analysis-scope card" hidden></section>
 <section id="cards" class="cards"></section>
-<nav><button data-tab="painel" class="active">Painel</button><button data-tab="despesas">Despesas</button><button data-tab="receitas">Receitas</button><button data-tab="gastos">Gastos</button><button data-tab="diarias">Diárias</button><button data-tab="auditoria">Auditoria</button><button data-tab="comparar">Comparar anos</button><button data-tab="entenda">Entenda os dados</button></nav>
+<nav><button data-tab="painel" class="active">Painel</button><button data-tab="despesas">Despesas</button><button data-tab="receitas">Receitas</button><button data-tab="gastos">Gastos</button><button data-tab="diarias">Pagamentos eventuais</button><button data-tab="auditoria">Auditoria</button><button data-tab="comparar">Comparar anos</button><button data-tab="entenda">Entenda os dados</button></nav>
 <section id="painel" class="panel"></section>
 <section id="tableSec" class="card tablewrap" hidden><table><thead id="thead"></thead><tbody id="tbody"></tbody></table></section>
 <section id="travelSec" hidden></section>
@@ -42,7 +42,7 @@
     <article class="explain card"><h3>Receita − empenho líquido</h3><p>Comparação analítica produzida pelo painel entre a receita arrecadada e o empenho líquido. <strong>Sozinha, essa diferença não deve ser interpretada como o resultado orçamentário definitivo ou como déficit/superávit do Município.</strong></p></article>
   </div>
   <div class="method card"><h3>Fonte e metodologia</h3><p>Os registros de despesas e receitas vêm da API do Portal da Transparência Municipal do Tribunal de Contas do Estado de São Paulo (TCESP). A documentação da API identifica, nas despesas, os eventos “empenhado”, “liquidado”, “pago”, “reforço” e “anulação”. O painel preserva esses eventos separadamente.</p><p>Os conceitos legais de empenho, liquidação e ordem de pagamento têm como referência os arts. 58 a 65 da Lei Federal nº 4.320/1964. Os indicadores “Empenho líquido” e “Receita − empenho líquido” são cálculos deste painel, apresentados para facilitar a leitura e não para substituir demonstrativos contábeis oficiais, auditoria ou análise das contas públicas.</p><p><a href="https://transparencia.tce.sp.gov.br/apis" target="_blank" rel="noopener">Documentação da API do TCESP</a> · <a href="https://www.planalto.gov.br/ccivil_03/leis/l4320.htm" target="_blank" rel="noopener">Lei nº 4.320/1964</a></p></div>
-  <div class="method card"><h3>Classificações indicativas</h3><p>A API consultada não fornece função orçamentária, secretaria responsável nem objeto detalhado da despesa. Por isso, o gráfico “Gastos pagos por setor” e a aba “Diárias” utiliza uma triagem estatística sobre pagamentos nominais a pessoas físicas. A API do TCESP não identifica a natureza do pagamento com precisão suficiente para afirmar que um lançamento é diária; a classificação deve ser confirmada no Portal da Transparência Municipal e nos documentos do empenho/liquidação.</p><p>Regra local solicitada: pagamentos à PROJETA são apresentados em “Limpeza pública”. A categoria “Folha de pagamento” exige expressões de remuneração, como “folha de pagamento”, “salário” ou “subsídios”; uma empresa que apenas contenha a palavra “Folha” no nome não é classificada automaticamente como folha salarial.</p></div>
+  <div class="method card"><h3>Classificações indicativas</h3><p>A API consultada não fornece função orçamentária, secretaria responsável nem objeto detalhado da despesa. Por isso, o gráfico “Gastos pagos por setor” e a aba “Pagamentos eventuais” utilizam classificações indicativas. Nessa aba, a API do TCESP permite identificar pagamentos nominais a pessoas físicas, mas não distingue com segurança sua natureza. Por isso, os resultados podem abranger diárias, ressarcimentos ou reembolsos, alimentação, combustível/deslocamento, adiantamentos e outras verbas eventuais. A natureza de cada lançamento deve ser confirmada no Portal da Transparência Municipal e nos documentos do empenho/liquidação.</p><p>Regra local solicitada: pagamentos à PROJETA são apresentados em “Limpeza pública”. A categoria “Folha de pagamento” exige expressões de remuneração, como “folha de pagamento”, “salário” ou “subsídios”; uma empresa que apenas contenha a palavra “Folha” no nome não é classificada automaticamente como folha salarial.</p></div>
 </section>
 <section class="tools card"><b>Dados</b><span class="datahint">Exercícios adicionais ficam salvos neste aparelho.</span><button id="csvBtn">Exportar CSV da aba</button><button id="backupBtn">Backup JSON</button><label class="file">Restaurar backup<input id="restore" type="file" accept=".json"></label><button id="resetBtn">Restaurar base original</button></section>
 <p id="status"></p>
@@ -51,4 +51,4 @@
   <div class="dialog-head"><div><small>Checagem dos lançamentos do TCESP</small><h2 id="paymentDetailTitle">Pagamentos por credor</h2></div><button id="closePaymentDialog" type="button" aria-label="Fechar detalhamento">Fechar</button></div>
   <div id="paymentDetailBody"></div>
 </dialog>
-<script src="seed-data.js"></script><script src="data-2014.js"></script><script src="data-2015.js"></script><script src="data-2016.js"></script><script src="data-2017.js"></script><script src="data-2018.js"></script><script src="data-2019.js"></script><script src="data-2020.js"></script><script src="data-2021.js"></script><script src="data-2022.js"></script><script src="data-2023.js"></script><script src="data-2024.js"></script><script src="data-2025.js"></script><script src="data-2026.js"></script><script src="app.js?v=0915-20260920"></script></body></html>
+<script src="seed-data.js"></script><script src="data-2014.js"></script><script src="data-2015.js"></script><script src="data-2016.js"></script><script src="data-2017.js"></script><script src="data-2018.js"></script><script src="data-2019.js"></script><script src="data-2020.js"></script><script src="data-2021.js"></script><script src="data-2022.js"></script><script src="data-2023.js"></script><script src="data-2024.js"></script><script src="data-2025.js"></script><script src="data-2026.js"></script><script src="app.js?v=0916-20260920"></script></body></html>

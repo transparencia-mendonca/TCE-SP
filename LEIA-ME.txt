@@ -1,31 +1,22 @@
-TCESP Mendonça — v0.9.15
+TCESP Mendonça — v0.9.16
 
-Atualização conservadora da triagem de Diárias.
+Atualização final desta etapa da triagem de pagamentos pessoais eventuais.
 
-O que muda nesta versão:
-- Ranking e detalhamento exibem apenas perfis com índice de triagem >= 70%.
-- Perfis com 55%, 60% ou 65% deixam de ser publicados na aba Diárias, por maior ambiguidade com estágio/bolsa de curta duração, prestação de serviço parcelada ou outros pagamentos recorrentes.
-- O corte vale simultaneamente para o ranking e para a lista de lançamentos, evitando divergência entre as duas áreas.
-- O índice é heurístico: não representa probabilidade estatística calibrada e não confirma a natureza jurídica/contábil do pagamento.
-- A confirmação continua dependendo do Portal da Transparência Municipal e do cotejo do empenho/liquidação no TCESP.
+O que muda:
+- a antiga aba “Diárias” passa a se chamar “Pagamentos eventuais”;
+- a apresentação deixa claro que os lançamentos podem corresponder a diárias, ressarcimentos/reembolsos, alimentação, combustível/deslocamento, adiantamentos ou outras verbas eventuais;
+- os filtros de recorrência e ambiguidade foram reforçados para reduzir falsos positivos antes da publicação;
+- a interface deixa de exibir percentuais e detalhes da regra de pontuação, apresentando apenas nível de confiança alto/muito alto;
+- o painel mantém uma abordagem conservadora: padrões recorrentes ou ambíguos ficam fora da exposição pública;
+- ranking e detalhamento continuam coerentes, agrupados por pessoa e com lançamentos em ordem cronológica;
+- permanecem os links para conferência do empenho/liquidação no TCESP;
+- nenhuma referência a documentação sigilosa é utilizada ou exibida.
 
-Filtros mantidos das versões anteriores:
-- estágio/bolsa: valores baixos, constantes e recorrentes;
-- prestação regular de serviço: valor praticamente fixo em vários meses;
-- atividade delegada ou outro programa mensal recorrente: cadência quase mensal, em regra um lançamento por competência, com valores variáveis;
-- filtro por coorte: perfis com calendário semelhante ao núcleo mensal recorrente;
-- pagamento único isolado;
-- nenhuma referência a documentação sigilosa ou à notícia de fato arquivada.
-
-Apresentação:
-- ranking em ordem decrescente pelo total selecionado;
-- lançamentos agrupados por pessoa;
-- dentro de cada pessoa, ordem cronológica;
-- links para conferência dos empenhos/liquidações no TCESP;
-- versão visível v0.9.15.
+Ressalva:
+A API do TCESP não distingue com precisão suficiente a natureza nominal do pagamento. A triagem não substitui a conferência no Portal da Transparência Municipal e nos documentos do empenho/liquidação.
 
 Publicação:
 - substituir index.html, app.js, style.css, sw.js e LEIA-ME.txt;
 - preservar seed-data.js e data-2014.js a data-2026.js;
-- durante esta fase de ajustes, o Service Worker/PWA offline continua desativado para evitar cache de versões antigas;
-- build estático: 0915-20260920.
+- o Service Worker/PWA offline permanece temporariamente desativado para evitar cache de versões antigas;
+- build estático: 0916-20260920.

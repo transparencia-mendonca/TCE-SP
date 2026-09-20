@@ -90,59 +90,10 @@ function renderPanel(view){
   $("#painel").querySelectorAll(".ranklink").forEach(b=>b.addEventListener("click",()=>showPaymentDetails(ranked[+b.dataset.rankIndex].id)));
   requestAnimationFrame(()=>{if(token!==renderToken||selectedYear!==+$("#ano").value)return;if(pieData.length)pie($("#pie"),pieData);lines($("#line"),lineSeries);if(revComp.length)pie($("#revenuePie"),revComp);if(sectorComp.length)bars($("#sectorBars"),sectorComp);if(barData.length)bars($("#bars"),barData)})
 }
-// Separação conservadora: o cadastro de pessoa física não comprova vínculo público.
+// O cadastro como pessoa física não comprova vínculo público nem a natureza do pagamento.
 function isNaturalPerson(row){return /CPF|PESSOA F[IÍ]SICA/i.test(row.fornecedorId||"")&&!/CNPJ|JUR[IÍ]DICA/i.test(row.fornecedorId||"")}
-function personnelPaymentKind(row){
-  const t=normalizedName(row);
-  const daily=/\bDIARIAS?\b/.test(t);
-  const salary=/FOLHA DE PAGAMENTO|\bSALARIOS?\b|\bVENCIMENTOS?\b|\bSUBSIDIOS?\b/.test(t);
-  if(daily&&salary)return "Natureza não identificada";
-  if(daily)return "Diária indicada no nome do credor";
-  if(salary)return "Remuneração indicada no nome do credor";
-  return "Natureza não identificada";
-}
-function personnelRows(){return baseFilt(db.despesas,true).filter(x=>x.evento==="Valor Pago"&&(isNaturalPerson(x)||personnelPaymentKind(x)!=="Natureza não identificada")).sort((a,b)=>paymentDateValue(b.data)-paymentDateValue(a.data)||n(b.valor)-n(a.valor))}
-function paymentPattern(rows){
-  const positive=rows.filter(x=>n(x.valor)>0),months=new Set(positive.map(x=>+x.mesNum)),amounts=new Map();
-  positive.forEach(x=>{const cents=Math.round(n(x.valor)*100);if(!amounts.has(cents))amounts.set(cents,new Set());amounts.get(cents).add(+x.mesNum)});
-  const ordered=[...amounts].sort((a,b)=>b[1].size-a[1].size||b[0]-a[0]),best=ordered[0],tie=best&&ordered[1]?.[1].size===best[1].size;
-  const stable=!!best&&!tie&&best[1].size>=3&&best[1].size/months.size>=.6;
-  const baseline=stable?best[0]:null,baselineRows=stable?positive.filter(x=>Math.round(n(x.valor)*100)===baseline):[];
-  const extra=stable?positive.filter(x=>Math.round(n(x.valor)*100)!==baseline&&baselineRows.some(b=>+b.mesNum===+x.mesNum)):[];
-  const otherCommitments=extra.filter(x=>x.empenho&&baselineRows.some(b=>+b.mesNum===+x.mesNum&&b.empenho&&b.empenho!==x.empenho)).length;
-  return {stable,baseline:baseline===null?null:baseline/100,months:months.size,repeated:best?.[1].size||0,extra,extraTotal:extra.reduce((s,x)=>s+n(x.valor),0),otherCommitments,negative:rows.filter(x=>n(x.valor)<0).length};
-}
-function personPatterns(ids){
-  const buckets=new Map();db.despesas.filter(x=>x.evento==="Valor Pago"&&isNaturalPerson(x)&&ids.has(supplierKey(x))&&orgMatch(x.orgao,$("#orgao").value)).forEach(x=>{const key=JSON.stringify([supplierKey(x),x.orgao,+x.ano]);if(!buckets.has(key))buckets.set(key,{id:supplierKey(x),name:x.fornecedor,org:x.orgao,year:+x.ano,rows:[]});buckets.get(key).rows.push(x)});
-  return [...buckets.values()].map(g=>({...g,...paymentPattern(g.rows)})).sort((a,b)=>b.year-a.year||a.name.localeCompare(b.name,"pt-BR")||a.org.localeCompare(b.org,"pt-BR"));
-}
-function dailyProbability(row,p){
-  if(!p.stable||n(row.valor)<=0)return null;
-  const cents=Math.round(n(row.valor)*100),base=Math.round(p.baseline*100);
-  if(cents===base)return {kind:"Remuneração provável",prob:90,why:"valor recorrente mensal usado como referência estatística"};
-  const sameMonthBase=p.rows.some(b=>+b.mesNum===+row.mesNum&&n(b.valor)>0&&Math.round(n(b.valor)*100)===base);
-  let score=sameMonthBase?55:35;
-  if(row.empenho&&p.rows.some(b=>+b.mesNum===+row.mesNum&&Math.round(n(b.valor)*100)===base&&b.empenho&&b.empenho!==row.empenho))score+=15;
-  const amountMonths=new Set(p.rows.filter(b=>n(b.valor)>0&&Math.round(n(b.valor)*100)===cents).map(b=>+b.mesNum)).size;
-  if(amountMonths===1)score+=10; else if(amountMonths>=3)score-=15;
-  const ratio=n(row.valor)/p.baseline;if(ratio>0&&ratio<.75)score+=10;if(ratio>1.5)score-=10;
-  score=Math.max(20,Math.min(90,score));
-  return {kind:"Possível diária",prob:score,why:sameMonthBase?"valor diferente da remuneração recorrente no mesmo mês":"valor diferente da remuneração recorrente; requer conferência documental"};
-}
 function tceExpenseUrl(year){return `https://transparencia.tce.sp.gov.br/municipio/mendonca/${year}/despesas`}
 function commitmentLink(emp,year,label){return `<a href="${tceExpenseUrl(year)}" target="_blank" rel="noopener" title="Abra o TCESP e filtre Evento = Valor Liquidado e Nº do empenho = ${esc(emp||'—')}">${esc(label||emp||"Consultar")}</a>`}
-function patternTable(people){
-  const patterns=personPatterns(new Set(people.map(supplierKey)));
-  return `<section class="card travel-table"><h3>Conferência probabilística</h3><p>O painel identifica um valor recorrente como <strong>remuneração provável</strong> quando ele aparece em pelo menos 3 meses e em 60% dos meses com pagamentos positivos. <strong>Todo pagamento positivo de valor diferente dessa referência passa a integrar a lista de possíveis diárias</strong>, com probabilidade indicativa. Isso amplia a triagem, mas não transforma o lançamento em diária confirmada. A natureza deve ser conferida no Portal da Transparência Municipal e no empenho/liquidação correspondente.</p><div class="tablewrap"><table><thead><tr><th>Pessoa</th><th>Órgão</th><th>Exercício</th><th>Remuneração mensal provável</th><th>Meses repetidos</th><th>Possíveis diárias</th><th>Ressalva</th></tr></thead><tbody>${patterns.map((p,i)=>{const candidates=p.stable?p.rows.filter(x=>n(x.valor)>0&&Math.round(n(x.valor)*100)!==Math.round(p.baseline*100)):[],total=candidates.reduce((a,x)=>a+n(x.valor),0);return `<tr><td><button class="ranklink" data-pattern-index="${i}">${esc(p.name)}</button></td><td>${esc(p.org)}</td><td>${p.year}</td><td>${p.stable?brl(p.baseline):"—"}</td><td>${p.stable?p.repeated:"—"}</td><td>${p.stable?`${brl(total)} (${candidates.length} lançamento(s))`:"Não apurado"}</td><td>${p.stable?"Triagem — confirmar natureza no Portal Municipal":"Sem recorrência suficiente para classificar"}</td></tr>`}).join("")||'<tr><td colspan="7">Nenhuma pessoa física no filtro atual.</td></tr>'}</tbody></table></div></section>`;
-}
-function showPatternDetails(p){
-  $("#paymentDetailTitle").textContent=`${p.name} — ${p.year}`;
-  $("#paymentDetailBody").innerHTML=`<div class="payment-detail"><p>${esc(p.org)}. Todos os meses carregados de ${p.year}; o filtro de mês foi desconsiderado nesta comparação.</p><p>Remuneração mensal provável: ${p.stable?brl(p.baseline):"não definida"}. <strong>As probabilidades são apenas triagem.</strong> A API do TCESP não informa a natureza nominal com precisão suficiente. Confira o empenho no TCESP e a natureza no Portal da Transparência Municipal.</p><p><a href="${tceExpenseUrl(p.year)}" target="_blank" rel="noopener">Abrir despesas de Mendonça no TCESP — ${p.year}</a> · no portal, selecione <strong>Evento: Valor Liquidado</strong> e pesquise o número do empenho.</p><div class="detail-tablewrap"><table><thead><tr><th>Data</th><th>Mês</th><th>Empenho</th><th>Valor</th><th>Classificação indicativa</th><th>Probabilidade</th><th>Liquidação TCESP</th></tr></thead><tbody>${p.rows.slice().sort((a,b)=>paymentDateValue(a.data)-paymentDateValue(b.data)).map(x=>{const q=dailyProbability(x,p);return `<tr><td>${esc(x.data)}</td><td>${esc(x.mes||MONTHS[x.mesNum])}</td><td>${esc(x.empenho)}</td><td>${brl(x.valor)}</td><td>${n(x.valor)<0?"Estorno — revisar":q?esc(q.kind):"Natureza indeterminada"}</td><td>${q&&q.prob!=null?q.prob+"%":"—"}</td><td>${commitmentLink(x.empenho,p.year,"Ver liquidação")}</td></tr>`}).join("")}</tbody></table></div></div>`;
-  const dlg=$("#paymentDialog");if(!dlg.open)dlg.showModal();
-}
-function simpleRankHTML(items,valueKey,subKey,empty){
-  return items.map((g,i)=>`<div class="rankrow"><span class="badge">${i+1}</span><button class="ranklink" data-person-key="${esc(g.id)}">${esc(g.name)}</button><span class="rankmeta">${subKey?esc(g[subKey]||""):""}</span><b>${brl(g[valueKey])}</b></div>`).join("")||`<p>${empty}</p>`;
-}
 function minimumWage(year){return ({2014:724,2015:788,2016:880,2017:937,2018:954,2019:998,2020:1045,2021:1100,2022:1212,2023:1320,2024:1412,2025:1518,2026:1621})[+year]||0}
 function monthlyCadenceStats(rows){
   const byMonth=new Map();
@@ -157,8 +108,6 @@ function monthlyCadenceStats(rows){
   return {byMonth,months,activeMonths,span,coverage,maxPerMonth,avgPerMonth,cv,meanMonthly:mean};
 }
 function delegatedActivityLike(rows,distinct,repeatMonths){
-  // Atividade Delegada e outros programas mensais costumam gerar uma liquidação/pagamento consolidado por competência,
-  // com valor variável conforme horas/escala. O critério é apenas comportamental: não identifica profissão nem cargo.
   const c=monthlyCadenceStats(rows);
   const continuous=c.activeMonths>=4&&c.span>=4&&c.coverage>=.75;
   const onePerMonth=c.avgPerMonth<=1.35&&c.maxPerMonth<=2;
@@ -171,9 +120,6 @@ function monthSetSimilarity(a,b){
   return {overlap:inter,jaccard:uni?inter/uni:0};
 }
 function delegatedCohortLike(rows,distinct,strongProfiles){
-  // Segunda camada: alguns integrantes do mesmo programa podem ter mês ausente, pagamento fracionado
-  // ou histórico menor e escapar do filtro rígido. Compara a cadência apenas com perfis mensais já
-  // reconhecidos pelo critério forte, sem usar nomes, cargos ou listas externas.
   const c=monthlyCadenceStats(rows);
   const softCadence=c.activeMonths>=3&&c.span>=4&&c.coverage>=.60;
   const concentrated=c.avgPerMonth<=1.70&&c.maxPerMonth<=3;
@@ -184,21 +130,41 @@ function delegatedCohortLike(rows,distinct,strongProfiles){
   for(const p of strongProfiles){
     const sim=monthSetSimilarity(c.months,p.months),ratio=p.meanMonthly>0?mean/p.meanMonthly:1;
     if(sim.overlap>best.overlap||(sim.overlap===best.overlap&&sim.jaccard>best.jaccard))best={...sim,ratio};
-    // Exige pelo menos 3 competências coincidentes e grande semelhança de calendário.
-    // A faixa de valores é deliberadamente ampla porque as horas/escala podem variar muito entre agentes.
     if(sim.overlap>=3&&sim.jaccard>=.60&&ratio>=.20&&ratio<=5)return {match:true,stats:c,similarity:sim};
   }
   return {match:false,stats:c,similarity:best};
 }
-const DIARY_MIN_CONFIDENCE=70;
-function diaryTriageGroups(){
-  // Usa o exercício inteiro para reconhecer recorrência; mês/pesquisa continuam sendo filtros de exibição.
+function paymentDayOfMonth(row){
+  const s=String(row?.data||"").trim();
+  let m=s.match(/^(\d{1,2})[\/.-](\d{1,2})[\/.-](\d{4})(?:\D|$)/);
+  if(m)return +m[1];
+  m=s.match(/^(\d{4})[\/.-](\d{1,2})[\/.-](\d{1,2})(?:\D|$)/);
+  if(m)return +m[3];
+  const t=Date.parse(s);if(Number.isFinite(t))return new Date(t).getUTCDate();
+  return null;
+}
+function shortRecurringSequenceLike(rows){
+  const c=monthlyCadenceStats(rows);
+  if(c.activeMonths<3||c.activeMonths>4)return {match:false,stats:c};
+  const compact=c.span<=c.activeMonths+1&&c.coverage>=.75;
+  const concentrated=c.avgPerMonth<=1.35&&c.maxPerMonth<=2;
+  if(!compact||!concentrated)return {match:false,stats:c};
+  const monthDays=c.months.map(m=>{
+    const days=rows.filter(x=>+x.mesNum===m).map(paymentDayOfMonth).filter(Number.isFinite).sort((a,b)=>a-b);
+    return days.length?days[Math.floor(days.length/2)]:null;
+  }).filter(Number.isFinite);
+  const dayAligned=monthDays.length>=3&&(Math.max(...monthDays)-Math.min(...monthDays)<=8);
+  const amountAligned=c.cv<=.35;
+  const threeMonthRun=c.activeMonths===3&&c.span<=4;
+  return {match:compact&&concentrated&&(dayAligned||amountAligned||threeMonthRun),stats:c};
+}
+function confidenceBand(score){return score>=85?"Muito alta":"Alta"}
+const EVENTUAL_MIN_CONFIDENCE=70;
+function eventualTriageGroups(){
   const y=+$("#ano").value, org=$("#orgao").value;
   const all=db.despesas.filter(x=>+x.ano===y&&x.evento==="Valor Pago"&&isNaturalPerson(x)&&orgMatch(x.orgao,org)&&n(x.valor)>0);
   const buckets=new Map();
   all.forEach(x=>{let k=supplierKey(x);if(!buckets.has(k))buckets.set(k,{id:k,name:x.fornecedor,year:y,rows:[]});buckets.get(k).rows.push(x)});
-
-  // Primeira passagem: calcula o perfil de todos e forma um núcleo de cadência mensal forte.
   const meta=new Map(),strongProfiles=[];
   for(const g of buckets.values()){
     const byAmount=new Map();
@@ -211,22 +177,21 @@ function diaryTriageGroups(){
     if(delegated.match)strongProfiles.push({id:g.id,months:delegated.stats.months,meanMonthly:delegated.stats.meanMonthly||1});
   }
 
-  const out=[];let delegatedExcluded=0,cohortExcluded=0,lowConfidenceExcluded=0;
+  const out=[];let delegatedExcluded=0,cohortExcluded=0,shortRecurringExcluded=0,lowConfidenceExcluded=0;
   for(const g of buckets.values()){
     const m=meta.get(g.id),{byAmount,repeated,repeatMonths,repeatValue,months,distinct,delegated}=m;
     const stipendLike=repeatMonths>=3&&repeatValue>0&&repeatValue<minimumWage(y)&&repeatMonths/Math.max(months,1)>=.6;
-    // Prestação recorrente: valor idêntico em vários meses, sem comportamento variável suficiente para sugerir deslocamentos.
     const regularServiceLike=!stipendLike&&repeatMonths>=3&&repeatMonths/Math.max(months,1)>=.7&&repeated.length<=2;
     if(stipendLike||regularServiceLike)continue;
     const variable=distinct>=2;
-    // Diária tende a ser eventual/variável. Exclui pagamento único isolado: é indistinguível de serviço eventual na API.
     if(g.rows.length<2||!variable)continue;
     if(delegated.match){delegatedExcluded++;continue}
     const cohort=delegatedCohortLike(g.rows,distinct,strongProfiles.filter(p=>p.id!==g.id));
     if(cohort.match){delegatedExcluded++;cohortExcluded++;continue}
+    const shortRecurring=shortRecurringSequenceLike(g.rows);
+    if(shortRecurring.match){shortRecurringExcluded++;continue}
     let candidates=g.rows.filter(x=>{
       const c=Math.round(n(x.valor)*100), reps=byAmount.get(c)?.size||0;
-      // Pagamentos muito baixos e repetidos são mais compatíveis com bolsa/ajuda regular do que diária.
       if(n(x.valor)<minimumWage(y)&&reps>=3)return false;
       return true;
     });
@@ -237,37 +202,33 @@ function diaryTriageGroups(){
     if(candidates.length>=4)confidence+=10;
     if(repeatMonths<=2)confidence+=10;
     confidence=Math.min(90,confidence);
-    // Corte editorial conservador: só publica no ranking e no detalhamento perfis com índice >= 70.
-    // Escores inferiores permanecem fora da exposição pública por serem mais ambíguos (ex.: estágio breve,
-    // prestação parcelada ou outro pagamento recorrente de curta duração).
-    if(confidence<DIARY_MIN_CONFIDENCE){lowConfidenceExcluded++;continue}
+    if(confidence<EVENTUAL_MIN_CONFIDENCE){lowConfidenceExcluded++;continue}
     out.push({...g,rows:candidates,total,count:candidates.length,confidence,distinct});
   }
   out.delegatedExcluded=delegatedExcluded;
   out.cohortExcluded=cohortExcluded;
+  out.shortRecurringExcluded=shortRecurringExcluded;
   out.lowConfidenceExcluded=lowConfidenceExcluded;
   return out.sort((a,b)=>b.total-a.total||a.name.localeCompare(b.name,"pt-BR"));
 }
 function renderTravel(){
-  const groups=diaryTriageGroups(),delegatedExcluded=groups.delegatedExcluded||0,cohortExcluded=groups.cohortExcluded||0,lowConfidenceExcluded=groups.lowConfidenceExcluded||0;
+  const groups=eventualTriageGroups();
   const q=queryValue(),m=+$("#mes").value;
   const shown=groups.map(g=>({...g,displayRows:g.rows.filter(x=>(!m||+x.mesNum===m)&&(!q||JSON.stringify(x).toLocaleLowerCase("pt-BR").includes(q)))})).filter(g=>g.displayRows.length||(!m&&!q));
   const ranking=shown.map(g=>({...g,displayTotal:g.displayRows.length?g.displayRows.reduce((a,x)=>a+n(x.valor),0):g.total,displayCount:g.displayRows.length||g.count})).sort((a,b)=>b.displayTotal-a.displayTotal||a.name.localeCompare(b.name,"pt-BR"));
 
-  // Cada pessoa recebe um bloco independente. Isso impede que o navegador intercale TBODYs
-  // ou que a leitura visual pareça misturar credores distintos.
   const grouped=ranking.map((g,rankIndex)=>{
     const rows=(g.displayRows.length?g.displayRows:g.rows).slice().sort(chronologicalCompare);
     return {g,rank:rankIndex+1,rows};
   });
   const detailCount=grouped.reduce((a,z)=>a+z.rows.length,0);
-  const rankHtml=ranking.map((g,i)=>`<div class="rankrow"><span class="badge">${i+1}</span><button class="ranklink" data-person-key="${esc(g.id)}">${esc(g.name)}</button><span class="rankmeta">${g.displayCount} lançamento(s) • triagem ${g.confidence}%</span><b>${brl(g.displayTotal)}</b></div>`).join("")||"<p>Nenhum padrão compatível com diária foi identificado nos filtros atuais.</p>";
-  const detailHtml=grouped.map(({g,rank,rows})=>`<section class="person-card card" data-person-rank="${rank}"><div class="person-card-head"><div><strong><span class="person-rank">${rank}º</span> ${esc(g.name)}</strong><span>${rows.length} lançamento(s) • total selecionado ${brl(g.displayTotal)} • triagem ${g.confidence}%</span></div></div><div class="tablewrap"><table class="person-table"><thead><tr><th>Data</th><th>Empenho</th><th>Valor do lançamento</th><th>Triagem</th><th>Empenho / liquidação</th></tr></thead><tbody>${rows.map(x=>`<tr><td>${esc(x.data||"—")}</td><td>${esc(x.empenho||"—")}</td><td class="num">${brl(x.valor)}</td><td>${g.confidence}% — possível diária</td><td>${commitmentLink(x.empenho,g.year,"Consultar no TCESP")}</td></tr>`).join("")}</tbody></table></div></section>`).join("");
+  const rankHtml=ranking.map((g,i)=>`<div class="rankrow"><span class="badge">${i+1}</span><button class="ranklink" data-person-key="${esc(g.id)}">${esc(g.name)}</button><span class="rankmeta">${g.displayCount} lançamento(s) • triagem ${confidenceBand(g.confidence).toLowerCase()}</span><b>${brl(g.displayTotal)}</b></div>`).join("")||"<p>Nenhum padrão eventual com confiança suficiente foi identificado nos filtros atuais.</p>";
+  const detailHtml=grouped.map(({g,rank,rows})=>`<section class="person-card card" data-person-rank="${rank}"><div class="person-card-head"><div><strong><span class="person-rank">${rank}º</span> ${esc(g.name)}</strong><span>${rows.length} lançamento(s) • total selecionado ${brl(g.displayTotal)} • triagem ${confidenceBand(g.confidence).toLowerCase()}</span></div></div><div class="tablewrap"><table class="person-table"><thead><tr><th>Data</th><th>Empenho</th><th>Valor do lançamento</th><th>Classificação</th><th>Empenho / liquidação</th></tr></thead><tbody>${rows.map(x=>`<tr><td>${esc(x.data||"—")}</td><td>${esc(x.empenho||"—")}</td><td class="num">${brl(x.valor)}</td><td>Pagamento pessoal eventual — natureza a confirmar</td><td>${commitmentLink(x.empenho,g.year,"Consultar no TCESP")}</td></tr>`).join("")}</tbody></table></div></section>`).join("");
 
-  $("#travelSec").innerHTML=`<div class="travel-hero card"><div class="travel-titleline"><h2>Diárias — triagem nominal</h2><span class="version-badge version-card">v0.9.15</span></div><p>Ranking do maior para o menor valor. A aba de salários foi retirada: remuneração ordinária deve ser consultada na folha de pagamento municipal.</p></div>
-  <div class="note card"><strong>Como a triagem funciona.</strong> A API JSON do TCESP não identifica a natureza do pagamento nominal com precisão suficiente. O painel exclui padrões mais compatíveis com <strong>estágio/bolsa</strong> (valor abaixo do salário mínimo do exercício, constante e recorrente), <strong>prestação regular de serviço</strong> (valor praticamente fixo em vários meses) e <strong>atividade delegada ou outro programa mensal recorrente</strong> (pagamento quase mensal, em regra um lançamento por competência, com valor variável). Uma segunda camada compara calendários de pagamento e retira também perfis que acompanham o <strong>mesmo padrão mensal de um grupo recorrente já identificado</strong>, mesmo quando há mês ausente ou pagamento fracionado. Também exclui pagamento único isolado, que pode ser serviço eventual. Permanecem pessoas físicas com pagamentos <strong>repetidos, variáveis e sem cadência mensal típica</strong>. Para reduzir falsos positivos, o painel publica no ranking e no detalhamento <strong>somente perfis com índice de triagem igual ou superior a ${DIARY_MIN_CONFIDENCE}%</strong>; escores inferiores são considerados insuficientes para exposição como possível diária. Esse percentual é um índice heurístico de confiança, não uma probabilidade estatística calibrada. A classificação deve ser confirmada no Portal da Transparência de Mendonça e no empenho/liquidação do TCESP.${delegatedExcluded?` <strong>${delegatedExcluded}</strong> pessoa(s) foram retiradas do ranking neste exercício por padrão mensal compatível com atividade delegada ou outro pagamento recorrente${cohortExcluded?`, sendo ${cohortExcluded} pela semelhança de calendário com o grupo mensal recorrente`:""}.`:""}${lowConfidenceExcluded?` <strong>${lowConfidenceExcluded}</strong> perfil(is) adicional(is) ficaram abaixo do corte editorial de ${DIARY_MIN_CONFIDENCE}% e não são exibidos.`:""}</div>
-  <section class="rank card travel-rank"><h3>Possíveis diárias — total em ordem decrescente</h3><p>O ranking decorre exclusivamente dos padrões observados nos lançamentos da base financeira carregada e mostra apenas perfis com índice de triagem ≥ 70%. A classificação é indicativa e exige conferência no Portal da Transparência Municipal.</p><div class="rankgrid">${rankHtml}</div></section>
-  <section class="travel-detail-list"><div class="card travel-list-intro"><h3>Lançamentos selecionados — agrupados por pessoa</h3><p>Os blocos seguem <strong>exatamente a ordem do ranking</strong>. Dentro de cada pessoa, os lançamentos são ordenados pela <strong>data real do lançamento, do mais antigo para o mais recente</strong>; quando a data vier ausente ou em formato não reconhecido, o mês informado pela base é usado como critério de segurança.</p></div>${detailHtml||'<div class="card"><p>Nenhum lançamento.</p></div>'}<div class="card detail-note">Cada pessoa possui tabela própria para evitar qualquer mistura visual. O link abre a página oficial de despesas do TCESP no exercício selecionado. Para cotejar, filtre <strong>Evento = Valor Liquidado</strong> e pesquise o número do empenho. A confirmação da natureza “diária” deve ser feita também no Portal da Transparência Municipal.</div></section>`;
+  $("#travelSec").innerHTML=`<div class="travel-hero card"><div class="travel-titleline"><h2>Pagamentos eventuais a pessoas físicas — triagem</h2><span class="version-badge version-card">v0.9.16</span></div><p>Ranking do maior para o menor valor entre os lançamentos que permaneceram após uma triagem conservadora de recorrência e ambiguidade.</p></div>
+  <div class="note card"><strong>Leitura correta.</strong> A base do TCESP não informa, com precisão suficiente, a natureza nominal destes pagamentos. Assim, um lançamento selecionado <strong>não deve ser chamado automaticamente de diária</strong>. Pode corresponder, por exemplo, a diária, ressarcimento ou reembolso, alimentação, combustível/deslocamento, adiantamento ou outra verba eventual. O painel publica apenas perfis de confiança alta e retém fora da exposição padrões recorrentes ou ambíguos. Por integridade da análise, a regra detalhada de pontuação não é apresentada na interface. A confirmação depende do Portal da Transparência de Mendonça e dos documentos do empenho/liquidação.</div>
+  <section class="rank card travel-rank"><h3>Pagamentos pessoais eventuais — total em ordem decrescente</h3><p>Lista de triagem para conferência documental. Ela não define a natureza jurídica ou contábil do pagamento.</p><div class="rankgrid">${rankHtml}</div></section>
+  <section class="travel-detail-list"><div class="card travel-list-intro"><h3>Lançamentos selecionados — agrupados por pessoa</h3><p>Os blocos seguem exatamente a ordem do ranking. Dentro de cada pessoa, os lançamentos são mostrados do mais antigo para o mais recente.</p></div>${detailHtml||'<div class="card"><p>Nenhum lançamento.</p></div>'}<div class="card detail-note">Cada pessoa possui tabela própria. O link abre a página oficial de despesas do TCESP no exercício selecionado. Para cotejar, filtre <strong>Evento = Valor Liquidado</strong> e pesquise o número do empenho. A natureza do pagamento deve ser confirmada no Portal da Transparência Municipal.</div></section>`;
   $("#travelSec").querySelectorAll("[data-person-key]").forEach(b=>b.addEventListener("click",()=>showPaymentDetails(b.dataset.personKey)));
   return detailCount;
 }
@@ -284,11 +245,11 @@ function paidComposition(y){let d=db.despesas.filter(x=>x.ano==y),g=supplierGrou
 function compareYears(){let ys=[...new Set([...(db.exercicios||[]),...db.despesas.map(x=>+x.ano),...db.receitas.map(x=>+x.ano)])].filter(Boolean).sort((a,b)=>a-b),want=[...new Set([2014,2015,2016,2017,2018,2019,2020,2021,2022,2023,2024,2025,2026,...ys])].sort((a,b)=>a-b),raw=want.map(yearTotals),readyRaw=raw.filter(x=>x.dr||x.rr),ready=readyRaw.map(x=>{let f=compareReal&&x.y<=2025?ipcaFactorTo2025(x.y):1;return {...x,rec:x.rec*f,net:x.net*f,liq:x.liq*f,paid:x.paid*f}}),full=ready.filter(x=>{let ms=new Set(db.receitas.filter(r=>r.ano==x.y).map(r=>r.mesNum));return ms.size===12}),growth=full.map((x,i)=>({y:x.y,recG:i?((x.rec/full[i-1].rec)-1)*100:NaN,paidG:i?((x.paid/full[i-1].paid)-1)*100:NaN})),latestFull=[...full].reverse().find(x=>x.y<=2025),selectedY=+$("#ano").value,selectedReady=readyRaw.some(x=>x.y===selectedY&&(x.dr||x.rr)),compY=selectedReady?selectedY:(latestFull?.y||2025),revComp=revenueComposition(compY),paidComp=paidComposition(compY),mode=compareReal?"valores reais, corrigidos pelo IPCA para reais de dez/2025":"valores nominais";
 $("#compareSec").innerHTML=`<div class="explain-hero card"><h2>Comparar exercícios</h2><p>Comparação gráfica e numérica dos exercícios armazenados neste aparelho. Exercícios parciais aparecem no gráfico de valores, mas não entram no cálculo de crescimento anual.</p><div class="modeSwitch"><button id="nominalBtn" class="${compareReal?'':'active'}">Valores nominais</button><button id="realBtn" class="${compareReal?'active':''}">Corrigidos pelo IPCA</button></div><small class="ipcanote">Modo atual: ${mode}. IPCA anual oficial do IBGE; 2026 permanece nominal por ser exercício em curso.</small></div>${ready.length?`<div class="comparecharts"><section class="chartcard card"><h3>Receita × empenho líquido × pago</h3><p>Totais dos meses disponíveis em cada exercício — ${mode}.</p><div class="chartbox"><canvas id="annualBars"></canvas></div></section><section class="chartcard card"><h3>Crescimento ${compareReal?'real':'nominal'} anual</h3><p>Variação de receita e pagamentos entre exercícios completos consecutivos.</p><div class="chartbox"><canvas id="growthLines"></canvas></div></section></div><div class="comparecharts"><section class="chartcard card"><h3>Composição da receita — ${compY}</h3><p>Classificação analítica pelas descrições de fonte, alínea e subalínea da API do TCESP.</p><div class="chartbox"><canvas id="revPie"></canvas></div></section><section class="chartcard card"><h3>Composição da despesa paga — ${compY}</h3><p>8 maiores credores + demais. A API usada pelo painel não traz função orçamentária da despesa.</p><div class="chartbox"><canvas id="paidPie"></canvas></div></section></div>`:""}<div class="comparegrid">${ready.slice().reverse().map(x=>`<div class="card compareyear"><h3>${x.y}${x.y===2026?' <small>(parcial)</small>':''}</h3>${x.dr||x.rr?`<small>${x.dr.toLocaleString("pt-BR")} despesas • ${x.rr.toLocaleString("pt-BR")} receitas</small><p><b>Receita</b><span>${brl(x.rec)}</span></p><p><b>Empenho líquido</b><span>${brl(x.net)}</span></p><p><b>Liquidado</b><span>${brl(x.liq)}</span></p><p><b>Pago</b><span>${brl(x.paid)}</span></p>`:`<small>Dados ainda não carregados.</small>`}</div>`).join("")}</div>${ready.length>1?`<div class="note card">Os totais abrangem os meses existentes em cada exercício. Um exercício parcial não deve ser comparado diretamente com 12 meses de um exercício encerrado. A correção pelo IPCA usa as taxas anuais do IBGE e expressa os exercícios encerrados em poder de compra de dezembro de 2025.</div>`:""}`;
 $("#nominalBtn")?.addEventListener("click",()=>{compareReal=false;compareYears()});$("#realBtn")?.addEventListener("click",()=>{compareReal=true;compareYears()});if(ready.length)requestAnimationFrame(()=>{annualBars($("#annualBars"),ready);if(growth.length>1)growthLines($("#growthLines"),growth);if(revComp.length)pie($("#revPie"),revComp);if(paidComp.length)pie($("#paidPie"),paidComp)})}
-function render(){syncYears();let view=currentViewData();$("#clearQ").hidden=!$("#q").value;renderAnalysisScope(view);cards(view);renderFreshness();$("#painel").hidden=tab!=="painel";$("#tableSec").hidden=!["despesas","receitas","gastos"].includes(tab);$("#travelSec").hidden=tab!=="diarias";$("#auditSec").hidden=tab!=="auditoria";$("#compareSec").hidden=tab!=="comparar";$("#entendaSec").hidden=tab!=="entenda";let count=0;if(tab==="painel")renderPanel(view);else if(tab==="diarias")count=renderTravel();else if(tab==="auditoria")audit();else if(tab==="comparar")compareYears();else if(tab==="entenda"){}else count=renderTable();$("#status").textContent=(count?count.toLocaleString("pt-BR")+" linhas exibidas • ":"")+"base histórica incorporada ao site + atualizações locais • v0.9.15"}
+function render(){syncYears();let view=currentViewData();$("#clearQ").hidden=!$("#q").value;renderAnalysisScope(view);cards(view);renderFreshness();$("#painel").hidden=tab!=="painel";$("#tableSec").hidden=!["despesas","receitas","gastos"].includes(tab);$("#travelSec").hidden=tab!=="diarias";$("#auditSec").hidden=tab!=="auditoria";$("#compareSec").hidden=tab!=="comparar";$("#entendaSec").hidden=tab!=="entenda";let count=0;if(tab==="painel")renderPanel(view);else if(tab==="diarias")count=renderTravel();else if(tab==="auditoria")audit();else if(tab==="comparar")compareYears();else if(tab==="entenda"){}else count=renderTable();$("#status").textContent=(count?count.toLocaleString("pt-BR")+" linhas exibidas • ":"")+"base histórica incorporada ao site + atualizações locais • v0.9.16"}
 async function importData(raw,mesNum,anoOverride){let a=typeof raw==="string"?JSON.parse(raw.replace(/^```(?:json)?\s*/,"").replace(/\s*```$/,"").trim()):raw;if(!Array.isArray(a)||!a.length)throw Error("JSON sem registros");let isD="evento" in a[0],ano=anoOverride??+$("#ano").value;if(isD){db.despesas=db.despesas.filter(x=>!(x.ano===ano&&x.mesNum===mesNum));db.despesas.push(...a.map(x=>({ano,mesNum,mes:x.mes||MONTHS[mesNum],orgao:x.orgao||"",evento:x.evento||"",empenho:x.nr_empenho||"",fornecedorId:x.id_fornecedor||"",fornecedor:x.nm_fornecedor||"",data:x.dt_emissao_despesa||"",valor:+String(x.vl_despesa||0).replace(/\./g,"").replace(",",".")})))}else{db.receitas=db.receitas.filter(x=>!(x.ano===ano&&x.mesNum===mesNum));db.receitas.push(...a.map(x=>({ano,mesNum,mes:x.mes||MONTHS[mesNum],orgao:x.orgao||"",fonte:x.ds_fonte_recurso||"",aplicacao:x.ds_cd_aplicacao_fixo||"",alinea:x.ds_alinea||"",subalinea:x.ds_subalinea||"",valor:+String(x.vl_arrecadacao||0).replace(/\./g,"").replace(",",".")})))}await save();render()}
 function download(name,text,type="application/json"){let a=document.createElement("a");a.href=URL.createObjectURL(new Blob([text],{type}));a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}
 $("#backupBtn").onclick=()=>download(`tcesp-mendonca-backup-${new Date().toISOString().slice(0,10)}.json`,JSON.stringify(db));$("#restore").onchange=async e=>{let x=JSON.parse(await e.target.files[0].text());if(!x.despesas||!x.receitas)return alert("Backup inválido");db=x;await save();render();alert("Backup restaurado.")};$("#resetBtn").onclick=async()=>{if(confirm("Restaurar a base histórica incorporada ao site e apagar apenas as atualizações locais posteriores?")){db=structuredClone(window.SEED_DATA);await save();render()}};
-$("#csvBtn").onclick=()=>{let table=tab==="diarias"?$("#travelTable"):$("#tableSec table");if(!table||tab==="painel"||tab==="auditoria"||tab==="comparar"||tab==="entenda")return alert("Abra Despesas, Receitas, Gastos ou Diárias.");let rows=[...table.querySelectorAll("tr")].map(tr=>[...tr.children].map(td=>'"'+td.innerText.replace(/"/g,'""')+'"').join(";"));download(`tcesp-${tab}.csv`,"\ufeff"+rows.join("\n"),"text/csv;charset=utf-8")};
+$("#csvBtn").onclick=()=>{let table=tab==="diarias"?$("#travelTable"):$("#tableSec table");if(!table||tab==="painel"||tab==="auditoria"||tab==="comparar"||tab==="entenda")return alert("Abra Despesas, Receitas, Gastos ou Pagamentos eventuais.");let rows=[...table.querySelectorAll("tr")].map(tr=>[...tr.children].map(td=>'"'+td.innerText.replace(/"/g,'""')+'"').join(";"));download(`tcesp-${tab}.csv`,"\ufeff"+rows.join("\n"),"text/csv;charset=utf-8")};
 for(let i=1;i<=12;i++)$("#mes").insertAdjacentHTML("beforeend",`<option value="${i}">${MONTHS[i]}</option>`);function selectTab(t){let b=document.querySelector(`nav button[data-tab="${t}"]`);if(!b)return;document.querySelectorAll("nav button").forEach(x=>x.classList.remove("active"));b.classList.add("active");tab=t;if(location.hash!=="#"+t)history.replaceState(null,"","#"+t);render()} document.querySelectorAll("nav button").forEach(b=>b.addEventListener("click",()=>selectTab(b.dataset.tab)));["mes","ano","orgao"].forEach(id=>$("#"+id).addEventListener("change",()=>{$("#paymentDialog").open&&$("#paymentDialog").close();render()}));let searchTimer,qInput=$("#q");function queueSearchRender(){$("#clearQ").hidden=!qInput.value;clearTimeout(searchTimer);if(!qInput.value.trim()){restoreGeneralView(false);return}searchTimer=setTimeout(render,120)}function finishSearchChange(){clearTimeout(searchTimer);qInput.value.trim()?render():restoreGeneralView(false)}qInput.addEventListener("input",queueSearchRender);qInput.addEventListener("search",finishSearchChange);qInput.addEventListener("change",finishSearchChange);qInput.addEventListener("compositionend",finishSearchChange);$("#clearQ").onclick=clearSearch;$("#closePaymentDialog").onclick=()=>$("#paymentDialog").close();$("#paymentDialog").addEventListener("click",e=>{if(e.target===$("#paymentDialog"))$("#paymentDialog").close()});
 $("#file").onchange=async e=>{let m=+$("#mes").value;if(!m)return alert("Selecione o mês que será substituído.");try{for(let f of e.target.files)await importData(await f.text(),m);alert("Importação concluída. O mês correspondente foi substituído, preservando duplicidades legítimas.")}catch(err){alert("Falha: "+err.message)}};
 const MUNICIPIO_API="mendonca";
