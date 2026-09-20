@@ -48,3 +48,10 @@ v0.8.3 — base permanente 2014–2026
 - 2014–2019 são consolidados no seed antes da inicialização
 - seletor inclui 2014–2026
 - cache do service worker atualizado para v083
+
+
+v0.8.4 — correção do filtro por exercício
+- Gráficos do Painel são redesenhados somente para o exercício atualmente selecionado.
+- Renderizações pendentes de um exercício anterior são descartadas, evitando gráfico 'preso' em 2026.
+- Os títulos exibem explicitamente o exercício selecionado.
+- Na aba Comparar, os gráficos de composição passam a usar o exercício selecionado quando houver dados.
