@@ -1,14 +1,20 @@
-TCESP Mendonça — v0.9.10
+TCESP Mendonça — v0.9.11
 
 Atualização da aba Diárias.
 
-- Exibe a versão v0.9.10 de forma visível no cabeçalho do painel e também na própria aba Diárias.
+- Exibe a versão v0.9.11 de forma visível no cabeçalho do painel e também na própria aba Diárias.
 - Mantém o ranking de possíveis diárias em ordem decrescente pelo total selecionado por pessoa.
 - Refaz o detalhamento para formar blocos visuais independentes por pessoa, exatamente na mesma sequência do ranking.
 - Dentro de cada pessoa, ordena os lançamentos cronologicamente, do mais antigo para o mais recente.
 - O cabeçalho de cada grupo mostra posição no ranking, nome, quantidade de lançamentos, total selecionado e confiança indicativa da triagem.
 - Mantém os links para conferência do empenho/liquidação no TCESP e a ressalva de que a natureza “diária” deve ser confirmada no Portal da Transparência Municipal.
 - Mantém removidas referências provenientes de documentação que não integra a base pública do painel.
-- Atualiza identificadores de cache para v0.9.10.
+- Atualiza identificadores de cache para v0.9.11.
 
 Aplicar sobre o repositório existente, substituindo index.html, app.js, style.css, sw.js e LEIA-ME.txt. Preservar seed-data.js e data-2014.js a data-2026.js.
+
+
+v0.9.11
+- Corrige definitivamente a ordem cronológica dos lançamentos de diárias com parser para datas dd/mm/aaaa, aaaa-mm-dd e variantes, com fallback pelo mês do registro.
+- Cada pessoa agora possui um bloco e uma tabela independentes, evitando mistura visual entre credores.
+- Reforça a invalidação de cache: assets ?v=0911, novo cache do Service Worker, updateViaCache=none e navegação network-first/no-store.
