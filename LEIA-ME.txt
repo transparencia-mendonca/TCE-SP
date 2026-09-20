@@ -26,3 +26,10 @@ VERSÃO 0.7
 - Registra automaticamente data/hora de cada atualização mensal feita pela API.
 - Exibe último mês disponível, última atualização e última verificação automática.
 - Em 2026, após o prazo AUDESP conhecido do próximo mês, tenta consultar automaticamente a API no máximo uma vez por dia.
+
+
+Versão 0.8
+- Comparativo nominal x corrigido pelo IPCA (IBGE), em reais de dez/2025.
+- Composição da receita por origem no comparativo.
+- Composição da despesa paga por credor no comparativo.
+- Gráficos de pizza com paleta categórica de alto contraste, sem degradê.
