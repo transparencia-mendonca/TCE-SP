@@ -68,3 +68,10 @@ v0.8.6 — análise individual e conferência de pagamentos
 - A aba “Fornecedores” passa a se chamar “Gastos”.
 - Os nomes do ranking abrem a decomposição por empenho e todos os lançamentos de pagamento disponíveis na base do TCESP.
 - Cache do aplicativo atualizado para v086.
+
+
+v0.8.7 — restauração reforçada do panorama geral
+- Campo de pesquisa vazio agora restaura o panorama geral imediatamente nos eventos input, search, change e compositionend.
+- O botão “Limpar” usa a mesma rotina central de restauração.
+- Após a limpeza, o painel verifica se algum título individual permaneceu; em caso de falha excepcional, recarrega a página automaticamente.
+- Cache do aplicativo atualizado para v087.
