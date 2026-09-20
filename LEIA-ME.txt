@@ -1,6 +1,6 @@
-TCESP Mendonça — PWA v0.6
+TCESP Mendonça — PWA v0.8.6
 
-Base inicial: janeiro a julho de 2026.
+Base histórica incorporada: exercícios de 2014 a 2026; o exercício de 2026 permanece parcial e recebe atualizações pela API.
 
 NOVO — MULTIEXERCÍCIO
 - Exercícios 2026 e 2025 aparecem no seletor.
@@ -15,10 +15,10 @@ A API do TCESP é a fonte dos dados. Se o navegador bloquear consultas diretas p
 Não compare um ano parcial com um exercício completo sem igualar o período.
 
 ARQUIVOS
-index.html, app.js, style.css, seed-data.js, manifest.webmanifest, sw.js, icon.svg.
+index.html, app.js, style.css, seed-data.js, data-2014.js a data-2026.js, manifest.webmanifest, sw.js, icon.svg.
 
 PUBLICAÇÃO
-Substitua todos os arquivos do repositório GitHub Pages. O cache desta versão é tcesp-mendonca-v060.
+Substitua todos os arquivos do repositório GitHub Pages. O cache desta versão é tcesp-mendonca-v086.
 
 
 VERSÃO 0.7
@@ -58,3 +58,13 @@ v0.8.4 — correção do filtro por exercício
 
 
 v0.8.5 — ranking de despesas ampliado de 20 para 40 maiores credores por valor pago; gráfico ampliado para comportar 40 posições. A pizza permanece com 10 maiores + demais.
+
+
+v0.8.6 — análise individual e conferência de pagamentos
+- A pesquisa por um único credor passa a identificar expressamente a análise individual.
+- Indicadores e gráficos se adaptam ao gasto selecionado: evolução das etapas da despesa e composição/pagamentos por número de empenho.
+- Títulos e quantidades dos rankings passam a refletir o número real de resultados, sem manter “40 maiores” quando há apenas um credor.
+- Limpeza da pesquisa restaurada por evento nativo, botão “Limpar” e atalho “Voltar ao panorama geral”.
+- A aba “Fornecedores” passa a se chamar “Gastos”.
+- Os nomes do ranking abrem a decomposição por empenho e todos os lançamentos de pagamento disponíveis na base do TCESP.
+- Cache do aplicativo atualizado para v086.

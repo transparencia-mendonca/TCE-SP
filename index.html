@@ -8,12 +8,13 @@
 <section class="controls card">
 <label>Exercício<select id="ano"><option value="2026">2026</option><option value="2025">2025</option></select></label><label>Mês<select id="mes"><option value="0">Ano inteiro</option></select></label>
 <label>Órgão<select id="orgao"><option value="Prefeitura">Prefeitura</option><option value="Todos">Todos</option><option value="Câmara">Câmara</option></select></label>
-<label class="grow">Pesquisar<input id="q" placeholder="Fornecedor, CNPJ, empenho, receita…"></label>
+<label class="grow">Pesquisar<span class="searchfield"><input id="q" type="search" placeholder="Gasto, credor, CNPJ, empenho, receita…" autocomplete="off"><button id="clearQ" type="button" hidden>Limpar</button></span></label>
 <button id="apiBtn">Atualizar mês TCESP</button><button id="yearBtn">Carregar exercício TCESP</button><button id="addYearBtn">Adicionar exercício</button><label class="file">Importar JSON<input id="file" type="file" accept=".json,.txt,.md" multiple></label>
 </section>
 <section id="apiFreshness" class="freshness card"></section>
+<section id="analysisScope" class="analysis-scope card" hidden></section>
 <section id="cards" class="cards"></section>
-<nav><button data-tab="painel" class="active">Painel</button><button data-tab="despesas">Despesas</button><button data-tab="receitas">Receitas</button><button data-tab="fornecedores">Fornecedores</button><button data-tab="auditoria">Auditoria</button><button data-tab="comparar">Comparar anos</button><button data-tab="entenda">Entenda os dados</button></nav>
+<nav><button data-tab="painel" class="active">Painel</button><button data-tab="despesas">Despesas</button><button data-tab="receitas">Receitas</button><button data-tab="gastos">Gastos</button><button data-tab="auditoria">Auditoria</button><button data-tab="comparar">Comparar anos</button><button data-tab="entenda">Entenda os dados</button></nav>
 <section id="painel" class="panel"></section>
 <section id="tableSec" class="card tablewrap" hidden><table><thead id="thead"></thead><tbody id="tbody"></tbody></table></section>
 <section id="auditSec" hidden></section>
@@ -35,4 +36,9 @@
 </section>
 <section class="tools card"><b>Dados</b><span class="datahint">Exercícios adicionais ficam salvos neste aparelho.</span><button id="csvBtn">Exportar CSV da aba</button><button id="backupBtn">Backup JSON</button><label class="file">Restaurar backup<input id="restore" type="file" accept=".json"></label><button id="resetBtn">Restaurar base original</button></section>
 <p id="status"></p>
-</main><script src="seed-data.js"></script><script src="data-2014.js"></script><script src="data-2015.js"></script><script src="data-2016.js"></script><script src="data-2017.js"></script><script src="data-2018.js"></script><script src="data-2019.js"></script><script src="data-2020.js"></script><script src="data-2021.js"></script><script src="data-2022.js"></script><script src="data-2023.js"></script><script src="data-2024.js"></script><script src="data-2025.js"></script><script src="data-2026.js"></script><script src="app.js"></script></body></html>
+</main>
+<dialog id="paymentDialog" class="payment-dialog" aria-labelledby="paymentDetailTitle">
+  <div class="dialog-head"><div><small>Checagem dos lançamentos do TCESP</small><h2 id="paymentDetailTitle">Pagamentos por credor</h2></div><button id="closePaymentDialog" type="button" aria-label="Fechar detalhamento">Fechar</button></div>
+  <div id="paymentDetailBody"></div>
+</dialog>
+<script src="seed-data.js"></script><script src="data-2014.js"></script><script src="data-2015.js"></script><script src="data-2016.js"></script><script src="data-2017.js"></script><script src="data-2018.js"></script><script src="data-2019.js"></script><script src="data-2020.js"></script><script src="data-2021.js"></script><script src="data-2022.js"></script><script src="data-2023.js"></script><script src="data-2024.js"></script><script src="data-2025.js"></script><script src="data-2026.js"></script><script src="app.js"></script></body></html>
