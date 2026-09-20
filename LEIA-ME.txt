@@ -36,3 +36,15 @@ Versão 0.8
 
 
 v0.8.1 — base histórica 2020–2026 incorporada ao site. Atualizações futuras permanecem locais/API. Corrigida sincronização do seletor de exercícios.
+
+
+Versão 0.8.2
+- Base histórica 2020–2026 dividida por exercício para respeitar o limite de 25 MB por arquivo do upload web do GitHub.
+- Os arquivos data-2020.js a data-2026.js são carregados automaticamente; não é necessário recarregar esses exercícios pela API.
+
+
+v0.8.3 — base permanente 2014–2026
+- index carrega data-2014.js a data-2026.js
+- 2014–2019 são consolidados no seed antes da inicialização
+- seletor inclui 2014–2026
+- cache do service worker atualizado para v083
