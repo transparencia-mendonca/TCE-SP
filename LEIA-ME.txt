@@ -1,4 +1,4 @@
-TCESP Mendonça — v0.9.8
+TCESP Mendonça — v0.9.9
 
 Atualização da aba Diárias.
 
@@ -6,6 +6,9 @@ Atualização da aba Diárias.
 - Mantém integralmente a triagem financeira: nenhuma pessoa é excluída em razão dessa remoção.
 - O ranking continua em ordem decrescente pelo total de possíveis diárias, com detalhamento dos lançamentos e link de consulta ao TCESP.
 - A classificação permanece probabilística e deve ser confirmada no Portal da Transparência Municipal e nos empenhos/liquidações correspondentes.
-- Atualiza os identificadores de cache para v0.9.8.
+- Atualiza os identificadores de cache para v0.9.9.
 
 Aplicar sobre o repositório existente, substituindo index.html, app.js, style.css, sw.js e LEIA-ME.txt. Preservar seed-data.js e data-2014.js a data-2026.js.
+
+- Corrige a coerência entre o ranking de possíveis diárias e a tabela de lançamentos: pessoas na mesma ordem do ranking por total decrescente; dentro de cada pessoa, lançamentos em valor decrescente.
+- Acrescenta posição e total do ranking à tabela detalhada para permitir conferência visual imediata.
