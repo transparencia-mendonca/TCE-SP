@@ -33,3 +33,6 @@ Versão 0.8
 - Composição da receita por origem no comparativo.
 - Composição da despesa paga por credor no comparativo.
 - Gráficos de pizza com paleta categórica de alto contraste, sem degradê.
+
+
+v0.8.1 — base histórica 2020–2026 incorporada ao site. Atualizações futuras permanecem locais/API. Corrigida sincronização do seletor de exercícios.
