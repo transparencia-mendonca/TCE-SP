@@ -1,27 +1,31 @@
-TCESP Mendonça — v0.9.14
+TCESP Mendonça — v0.9.15
 
-Atualização da triagem de Diárias.
+Atualização conservadora da triagem de Diárias.
 
-- Mantém a aba pública focada exclusivamente em possíveis diárias.
-- Acrescenta um filtro comportamental para pagamentos compatíveis com atividade delegada ou outro programa mensal recorrente.
-- O filtro NÃO identifica profissão, cargo ou vínculo funcional e não usa lista de nomes: observa apenas a cadência financeira.
-- São retirados do ranking padrões com presença em pelo menos 4/5 meses, cobertura mensal elevada, em regra um pagamento por competência e valores variáveis.
-- Isso reduz falsos positivos de policiais ou outros beneficiários de programas recorrentes que antes podiam ser confundidos com diárias.
-- Mantém exclusão de padrões típicos de estágio/bolsa, prestação regular de serviço e pagamento único isolado.
-- Mantém o ranking de possíveis diárias em ordem decrescente por total e os lançamentos agrupados por pessoa em ordem cronológica.
-- Mantém links para conferência dos empenhos/liquidações no TCESP e a ressalva de confirmação no Portal da Transparência Municipal.
-- Não contém referências a documentação sigilosa ou à notícia de fato arquivada.
-- Atualiza versão visível e cache para v0.9.14.
+O que muda nesta versão:
+- Ranking e detalhamento exibem apenas perfis com índice de triagem >= 70%.
+- Perfis com 55%, 60% ou 65% deixam de ser publicados na aba Diárias, por maior ambiguidade com estágio/bolsa de curta duração, prestação de serviço parcelada ou outros pagamentos recorrentes.
+- O corte vale simultaneamente para o ranking e para a lista de lançamentos, evitando divergência entre as duas áreas.
+- O índice é heurístico: não representa probabilidade estatística calibrada e não confirma a natureza jurídica/contábil do pagamento.
+- A confirmação continua dependendo do Portal da Transparência Municipal e do cotejo do empenho/liquidação no TCESP.
 
-Aplicar sobre o repositório existente, substituindo index.html, app.js, style.css, sw.js e LEIA-ME.txt. Preservar seed-data.js e data-2014.js a data-2026.js.
+Filtros mantidos das versões anteriores:
+- estágio/bolsa: valores baixos, constantes e recorrentes;
+- prestação regular de serviço: valor praticamente fixo em vários meses;
+- atividade delegada ou outro programa mensal recorrente: cadência quase mensal, em regra um lançamento por competência, com valores variáveis;
+- filtro por coorte: perfis com calendário semelhante ao núcleo mensal recorrente;
+- pagamento único isolado;
+- nenhuma referência a documentação sigilosa ou à notícia de fato arquivada.
 
-- v0.9.14: adiciona filtro por coorte mensal: perfis com calendário muito semelhante ao núcleo de pagamentos mensais recorrentes também são retirados da triagem de diárias, sem usar nomes ou cargos.
+Apresentação:
+- ranking em ordem decrescente pelo total selecionado;
+- lançamentos agrupados por pessoa;
+- dentro de cada pessoa, ordem cronológica;
+- links para conferência dos empenhos/liquidações no TCESP;
+- versão visível v0.9.15.
 
-
-HOTFIX DE PUBLICAÇÃO v0.9.14
-- Mantém a triagem da v0.9.13, inclusive o filtro por coorte para pagamentos mensais recorrentes.
-- Desativa temporariamente o Service Worker/PWA offline durante a fase de ajustes frequentes.
-- Ao carregar, remove registros antigos de Service Worker e caches tcesp-mendonca-* do navegador.
-- index.html exibe v0.9.14 diretamente, sem depender de app.js.
-- app.js e style.css usam identificador de build 0914-20260920 para evitar reaproveitamento de cache.
-- Quando o painel estiver estabilizado, o cache offline poderá ser reintroduzido em uma versão 1.0.
+Publicação:
+- substituir index.html, app.js, style.css, sw.js e LEIA-ME.txt;
+- preservar seed-data.js e data-2014.js a data-2026.js;
+- durante esta fase de ajustes, o Service Worker/PWA offline continua desativado para evitar cache de versões antigas;
+- build estático: 0915-20260920.
