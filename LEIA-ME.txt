@@ -1,3 +1,13 @@
+TCESP Mendonça — v0.9.7
+
+HOTFIX DE PUBLICAÇÃO
+- Remove do menu a referência a salários; a aba passa a se chamar apenas “Diárias”.
+- Corrige o texto metodológico do index.html para refletir a triagem probabilística.
+- Força carregamento do app.js/style.css da v0.9.7 para evitar reaproveitamento da versão v0.9.3 pelo navegador.
+- Atualiza o cache do Service Worker para tcesp-mendonca-v097.
+- Mantém a triagem de estagiários/bolsas, prestadores recorrentes e pagamentos eventuais da v0.9.6.
+- Mantém a confirmação obrigatória no Portal da Transparência Municipal e no empenho/liquidação do TCESP.
+
 TCESP Mendonça — PWA v0.9.3
 
 NOVO 0.9.3 — SEPARAÇÃO PROBABILÍSTICA REMUNERAÇÃO × DIÁRIA
@@ -95,7 +105,7 @@ v0.8.7 — restauração reforçada do panorama geral
 
 
 v0.9.0 — diárias, viagens, receitas e setores
-- Nova aba “Diárias e viagens” com ranking clicável, datas, tipo, credor, identificação, empenho, órgão e valor pago.
+- Nova aba “Diárias — triagem nominal” com ranking clicável, datas, tipo, credor, identificação, empenho, órgão e valor pago.
 - A relação de diárias e viagens é indicativa: usa termos reconhecíveis no nome do credor, pois a API não fornece o objeto detalhado da despesa.
 - Novo gráfico de pizza da composição das receitas no Painel.
 - Novo gráfico de gastos pagos por setor, com classificação indicativa pelo nome do credor.
