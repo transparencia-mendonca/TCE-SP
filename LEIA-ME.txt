@@ -1,4 +1,4 @@
-TCESP Mendonça — v0.9.12
+TCESP Mendonça — v0.9.13
 
 Atualização da triagem de Diárias.
 
@@ -11,6 +11,8 @@ Atualização da triagem de Diárias.
 - Mantém o ranking de possíveis diárias em ordem decrescente por total e os lançamentos agrupados por pessoa em ordem cronológica.
 - Mantém links para conferência dos empenhos/liquidações no TCESP e a ressalva de confirmação no Portal da Transparência Municipal.
 - Não contém referências a documentação sigilosa ou à notícia de fato arquivada.
-- Atualiza versão visível e cache para v0.9.12.
+- Atualiza versão visível e cache para v0.9.13.
 
 Aplicar sobre o repositório existente, substituindo index.html, app.js, style.css, sw.js e LEIA-ME.txt. Preservar seed-data.js e data-2014.js a data-2026.js.
+
+- v0.9.13: adiciona filtro por coorte mensal: perfis com calendário muito semelhante ao núcleo de pagamentos mensais recorrentes também são retirados da triagem de diárias, sem usar nomes ou cargos.
