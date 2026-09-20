@@ -55,3 +55,6 @@ v0.8.4 — correção do filtro por exercício
 - Renderizações pendentes de um exercício anterior são descartadas, evitando gráfico 'preso' em 2026.
 - Os títulos exibem explicitamente o exercício selecionado.
 - Na aba Comparar, os gráficos de composição passam a usar o exercício selecionado quando houver dados.
+
+
+v0.8.5 — ranking de despesas ampliado de 20 para 40 maiores credores por valor pago; gráfico ampliado para comportar 40 posições. A pizza permanece com 10 maiores + demais.
