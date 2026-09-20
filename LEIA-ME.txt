@@ -1,4 +1,21 @@
-TCESP Mendonça — PWA v0.9.0
+TCESP Mendonça — PWA v0.9.3
+
+NOVO 0.9.3 — SEPARAÇÃO PROBABILÍSTICA REMUNERAÇÃO × DIÁRIA
+- Valor mensal recorrente é apresentado como remuneração provável, nunca como confirmação.
+- Pagamentos adicionais no mesmo mês recebem probabilidade indicativa de serem diária.
+- A probabilidade considera presença da remuneração recorrente no mesmo mês, empenho distinto, recorrência do valor adicional e proporção em relação ao valor-base.
+- Todo resultado traz ressalva expressa: a confirmação depende de cotejo com o Portal da Transparência Municipal, pois o JSON da API do TCESP usado pelo painel não diferencia salário/subsídio, diária e outras verbas.
+- Férias, 13º, diferenças remuneratórias, serviços, restituições e ressarcimentos permanecem hipóteses alternativas.
+
+CORREÇÃO 0.9.1 — DIÁRIAS E REMUNERAÇÃO
+Fretamentos e hotéis não integram o ranking de diárias individuais.
+Pagamentos a pessoas físicas são identificados pelo cadastro CPF da fonte.
+Não se presume vínculo de servidor/agente político nem natureza salarial.
+Rubricas agregadas de folha e diárias aparecem separadas, sem rateio entre pessoas.
+Na base incorporada de 2026 há pagamentos a pessoas físicas sem natureza disponível.
+Para concluir a separação individual, é necessário obter o detalhamento dos empenhos e a folha nominal municipal.
+Instalação: substituir index.html, app.js, sw.js, style.css e LEIA-ME.txt na raiz do repositório.
+Versão esperada no rodapé: v0.9.3.
 
 Base histórica incorporada: exercícios de 2014 a 2026; o exercício de 2026 permanece parcial e recebe atualizações pela API.
 
@@ -86,3 +103,5 @@ v0.9.0 — diárias, viagens, receitas e setores
 - Folha de pagamento exige expressões salariais, evitando classificar empresas que apenas contenham a palavra “Folha”.
 - Exportação CSV também funciona na nova aba.
 - Cache do aplicativo atualizado para v090.
+
+Versão 0.9.2: comparação anual por pessoa física e órgão, valores recorrentes em pelo menos 3 meses e 60% dos meses com pagamentos positivos. Pagamentos adicionais no mesmo mês são sinalizados para conferência, nunca convertidos automaticamente em diárias. Clique no nome da comparação para abrir todos os lançamentos daquele exercício.
