@@ -112,3 +112,12 @@ V0.9.4 — SALÁRIOS E DIÁRIAS
 - Ordem decrescente de valor em ambos.
 - Pessoas com o mesmo sobrenome são agrupadas visualmente; isso não presume parentesco.
 - Ressalva explícita: a API JSON do TCESP não diferencia suficientemente a natureza nominal do lançamento; confirmação exige cotejo com o Portal da Transparência Municipal.
+
+
+V0.9.5 — LISTAS INDIVIDUAIS E CONFERÊNCIA DE LIQUIDAÇÃO
+- Removido integralmente o agrupamento por sobrenome.
+- Salários/subsídios prováveis em ordem decrescente pelo valor mensal recorrente.
+- Possíveis diárias em ordem decrescente; triagem ampliada para todo pagamento positivo diferente da remuneração recorrente, além de rubricas explicitamente indicadas como diária.
+- Ressalva reforçada: a classificação é probabilística e deve ser confirmada no Portal da Transparência Municipal e nos registros oficiais.
+- Cada possível diária traz link para a página oficial de despesas do TCESP no exercício correspondente, com orientação para filtrar Evento = Valor Liquidado e o número do empenho.
+- Cache atualizado para v095.
