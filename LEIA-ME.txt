@@ -1,24 +1,21 @@
-TCESP Mendonça — v0.9.17
+TCESP Mendonça — v0.8.6
 
-Atualização do módulo de auditoria do painel.
+NOVIDADE
+- A aba Auditoria passa a ter duas camadas independentes:
+  1) consistência automatizada da base AUDESP/API;
+  2) fiscalização oficial das Contas Anuais do TCESP, quando houver documento cadastrado.
+- O motor é genérico: os dados municipais ficam separados em audit-findings.js.
+- Mendonça inclui o parecer das Contas de 2024 (TC-004159.989.24-3, sessão de 18/08/2026).
+- Mantidos Top 40 e correção de troca de exercício da v0.8.5.
 
-O que muda:
-- a aba “Auditoria” passa a se apresentar como “Sinais de auditoria”;
-- a triagem anual ganhou detector de múltiplos empenhos de pequeno valor por credor;
-- foi incluído detector de pagamentos coincidentes: mesmo credor, mesmo valor e mesma data em empenhos distintos;
-- foi criada uma área de qualidade dos dados, com divergência entre competência e data, pagamentos em fins de semana, ausência de identificação, grafias distintas, duplicatas exatas e estornos;
-- a aba também executa testes de integridade entre empenho líquido, liquidação e pagamento e informa quando não encontra quebras;
-- os sinais são apresentados como pontos de conferência, nunca como prova de irregularidade;
-- mês e pesquisa textual são ignorados nos testes anuais da aba de auditoria para reduzir falsos positivos; o filtro de órgão é respeitado;
-- ao clicar em um credor no ranking, na aba Gastos ou nas tabelas de auditoria, abre-se uma ficha histórica consolidada pelo identificador, com nomes alternativos, totais por exercício, empenhos e pagamentos;
-- a interface não publica a regra detalhada de seleção dos sinais;
-- a aba “Pagamentos eventuais” e seus filtros conservadores da v0.9.16 foram preservados.
+PUBLICAÇÃO EM MENDONÇA
+Substitua os 8 arquivos pequenos já existentes e ADICIONE audit-findings.js.
+NÃO substitua nem apague data-2014.js a data-2026.js.
 
-Limitações:
-A base do TCESP usada pelo painel não contém, com detalhe suficiente para esses testes, objeto da contratação, modalidade, contrato, nota fiscal, medição, ata de registro de preços ou justificativa de pagamento. Os sinais devem ser cotejados com os documentos administrativos correspondentes.
+ARQUITETURA PARA O REPOSITÓRIO CENTRAL
+- index.html, app.js, style.css e sw.js contêm o motor genérico.
+- audit-findings.js é configuração/dado municipal e NÃO deve ser compartilhado entre municípios.
+- Para outro município, use audit-findings.js vazio: window.TCESP_AUDIT_FINDINGS = [];
 
-Publicação:
-- substituir index.html, app.js, style.css, sw.js e LEIA-ME.txt;
-- preservar seed-data.js e data-2014.js a data-2026.js;
-- o Service Worker/PWA offline permanece temporariamente desativado para evitar cache de versões antigas durante a fase de atualização frequente;
-- build estático: 0917-20260920.
+IMPORTANTE
+Os resumos de fiscalização não substituem o documento oficial do TCESP. A ausência de um exercício no módulo não significa ausência de fiscalização.
